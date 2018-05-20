@@ -1,6 +1,6 @@
 ### FrasierTweeter
 
-This project captures a timelapse of a Frasier fir tree growing and tweets updates.
+This project captures a timelapse of a Fraser fir tree growing and tweets updates.
 
 Requirements
 + RaspberryPi w/ camera attachment
