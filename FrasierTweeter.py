@@ -7,9 +7,8 @@ class FrasierTweeter(object):
     def __init__():
         self.lat, self.long = 36.1627, -86.7816
         self.date = datetime.strftime(datetime.today(), '%Y-%m-%d')
-        self.date_tomorrow = datetime.strftime(datetime.now() + timedelta(days=1), '%Y-%m-%d')
+        self.date_tomorrow = datetime.strftime(datetime.today() + timedelta(days=1), '%Y-%m-%d')
         self.local_tz = pytz.timezone('US/Central')
-        self.twitter = self._get_api()
 
     def _get_api():
         '''Connect to Twitter API, requires `keys.json`'''
@@ -19,15 +18,18 @@ class FrasierTweeter(object):
         return tweepy.API(auth)
 
     def timelapse():
+        '''Capture continuous images'''
         camera = PiCamera()
         camera.resolution = (1024,768)
         camera.start_preview()
         time.sleep(2) # let camera warm up / get started
         sunrise_dt, sunset_dt = self._get_suntime()
         for filename in camera.capture_continuous('imgs/img{timestamp:%Y-%m-%d-%H-%M}'.jpg):
-            while sunrise_dt < datetime.now().replace(tzinfo=self.local_tz) < sunset_dt:
-            print 'Captured {}'.format(filename)
-            self._wait()
+            if sunrise_dt < datetime.now().replace(tzinfo=self.local_tz) < sunset_dt:
+                print 'Captured {}'.format(filename)
+                self._wait()
+            else:
+                break
 
     def _wait():
         '''Helper fcn to wait 2 min between image captures'''
@@ -36,6 +38,8 @@ class FrasierTweeter(object):
         time.sleep(delay)
 
     def tweet():
+        '''Tweet updates via Twitter API / tweepy'''
+        api = self._get_api()
         tweet = "Hello, world!"
         status = api.update_status(status=tweet)
 
@@ -45,7 +49,7 @@ class FrasierTweeter(object):
         response = requests.get('https://api.sunrise-sunset.org/json?lat={}&lng={}&date={}'.format(*APIargs)).json()
 
         sunrise = response['results']['sunrise']
-        sunrise_dt = _localize_time(self.date, sunrise)
+        sunrise_dt = _UTC2local(self.date, sunrise)
 
         sunset = response['results']['sunset']
         if sunset[-2:] == 'AM':
@@ -64,7 +68,7 @@ class FrasierTweeter(object):
 def main():
     ft = FrasierTweeter()
     ft.timelapse()
-    ft.tweet()
+    # ft.tweet()
 
 if __name__ == '__main__':
     main()
