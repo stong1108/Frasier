@@ -1,0 +1,5 @@
+requests==2.10.0
+pytz==2016.7
+python_crontab==2.3.4
+picamera==1.13
+tweepy==3.6.0
